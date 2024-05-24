@@ -26,6 +26,15 @@ conda activate phunky
 pip install phunky
 ```
 
+5. Optional: Setup the checkv database 
+```
+checkv download_database /path/to/checkv-db
+```
+
+```
+export CHECKVDB=/path/to/checkv-db
+```
+
 ## Usage
 Open a python terminal and enter:
 ```py
