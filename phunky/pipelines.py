@@ -6,7 +6,10 @@ from phunky.functions import (
     filtlong,
     nanoplot,
     flye_assembly,
-    checkv
+    checkv,
+    read_mapping,
+    extract_contig_header,
+    generate_coverage_graph
 )
 
 
@@ -49,6 +52,21 @@ def phage_assembly_pipeline(input_file, output_dir):
     outdir = os.path.join(output_dir, 'CheckV')
     checkv(contigs, outdir)
 
+    # Read mapping
+    outdir = os.path.join(output_dir, 'Read_mapping')
+    basecov = read_mapping(
+        contigs_fasta=contigs,
+        reads=fq_filt,
+        output_directory=out
+    )[0]
+
+    # Using basecov.tsv and header to generate coverage graph
+    header = extract_contig_header(contigs)[0]
+    generate_coverage_graph(
+        header=header,
+        basecov=basecov,
+        output_directory=out)
+
 
 def bacterial_assembly_pipeline(input_file, output_dir):
     # Create output location
@@ -69,7 +87,7 @@ def bacterial_assembly_pipeline(input_file, output_dir):
 
     # Filter
     fq_filt = os.path.join(output_dir, f'{name}_filtered.fastq')
-    filtlong(fq_trim_gz, fq_filt)
+    filtlong(fq_trim_gz, fq_filt, target_bases=500000000)
 
     # Reads QC
     outdir = os.path.join(output_dir, 'nanoplot_raw')
@@ -82,8 +100,20 @@ def bacterial_assembly_pipeline(input_file, output_dir):
     outdir = os.path.join(output_dir, 'Flye_assembly')
     contigs = flye_assembly(fq_filt, outdir)
 
-    # CheckM
-    print(contigs)
+    # Read mapping
+    outdir = os.path.join(output_dir, 'Read_mapping')
+    basecov = read_mapping(
+        contigs_fasta=contigs,
+        reads=fq_filt,
+        output_directory=out
+    )[0]
+
+    # Using basecov.tsv and header to generate coverage graph
+    header = extract_contig_header(contigs)[0]
+    generate_coverage_graph(
+        header=header,
+        basecov=basecov,
+        output_directory=out)
 
 
 ###_____________________________________________________BATCHES
@@ -94,7 +124,7 @@ def batch_phage_assembly_pipeline(input_dir, output_dir):
         try:
             phage_assembly_pipeline(file, output_dir)
         except Exception as e:
-            print(f"ERROR {file}")
+            print(f"ERROR {e}")
             continue
 
 
@@ -103,5 +133,5 @@ def batch_bacterial_assembly_pipeline(input_dir, output_dir):
         try:
             bacterial_assembly_pipeline(file, output_dir)
         except Exception as e:
-            print(f"ERROR {file}")
+            print(f"ERROR {e}")
             continue

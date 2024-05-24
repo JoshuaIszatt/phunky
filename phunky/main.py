@@ -34,10 +34,21 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-
-    if args.pipeline == "phage":
-        phage_assembly_pipeline(args.input_file, args.output_dir)
-    elif args.pipeline == "bacterial":
-        bacterial_assembly_pipeline(args.input_file, args.output_dir)
+    if args.batch:
+        if args.pipeline == "phage":
+            print("Running a Phunky pipeline")
+            batch_phage_assembly_pipeline(args.input_file, args.output_dir)
+        elif args.pipeline == "bacterial":
+            print("Running a Phunky pipeline")
+            batch_bacterial_assembly_pipeline(args.input_file, args.output_dir)
+        else:
+            print("Invalid pipeline choice. Use 'phage' or 'bacterial'.")
     else:
-        print("Invalid pipeline choice. Use 'phage' or 'bacterial'.")
+        if args.pipeline == "phage":
+            print("Running Phunky pipelines")
+            phage_assembly_pipeline(args.input_file, args.output_dir)
+        elif args.pipeline == "bacterial":
+            print("Running Phunky pipelines")
+            bacterial_assembly_pipeline(args.input_file, args.output_dir)
+        else:
+            print("Invalid pipeline choice. Use 'phage' or 'bacterial'.")
