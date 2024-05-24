@@ -49,9 +49,8 @@ def phage_assembly_pipeline(input_file, output_dir):
     contigs = flye_assembly(fq_filt, outdir)
 
     # CheckV
-    if os.getenv('CHECKVDB'):
-        outdir = os.path.join(out, 'CheckV')
-        checkv(contigs, outdir)
+    outdir = os.path.join(out, 'CheckV')
+    checkv(contigs, outdir)
 
     # Read mapping
     outdir = os.path.join(out, 'Read_mapping')

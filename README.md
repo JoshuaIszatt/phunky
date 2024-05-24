@@ -1,5 +1,30 @@
 # Phunky
-* Long read assembly for phages and bacteria.
+* Long read assembly for phages
+
+## Usage
+Install:
+```
+pip install phunky
+```
+
+Open a python terminal and enter:
+```py
+import phunky
+dir(phunky)
+```
+
+Quick phage assembly:
+```py
+import phunky
+phunky.phage_assembly_pipeline('example_reads.bam', 'output_directory/')
+```
+
+Batch phage assembly:
+```py
+import phunky
+phunky.phage_assembly_pipeline('reads_directory/', 'output_directory/')
+```
+
 
 ### dependencies:
   - python>=3
@@ -12,3 +37,10 @@
   - porechop_abi==0.5.0
   - nanoplot==1.42.0
   - filtlong==0.2.1
+
+
+## Todo
+* Create conda distribution
+* Add logging function
+* Add hash key function
+* Add multiprocessing

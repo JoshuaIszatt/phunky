@@ -1,0 +1,39 @@
+package:
+  name: phunky
+  version: "0.1"  # Replace with your package version
+
+source:
+  url: https://pypi.io/packages/source/p/phunky/phunky-0.1.0.tar.gz  # Replace with the correct URL for your package
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install ."
+
+requirements:
+  build:
+    - python
+    - pip
+  host:
+    - python>=3
+    - pip
+  run:
+    - python>=3
+    - checkv==1.0.3
+    - biopython==1.83
+    - bbmap==39.06
+    - pandas==2.2.1
+    - matplotlib==3.8.4
+    - flye==2.9.3
+    - porechop_abi==0.5.0
+    - nanoplot==1.42.0
+    - filtlong==0.2.1
+
+about:
+  home: https://github.com/JoshuaIszatt/longass
+  summary: phunky is a package for long read genome assembly (phages)
+  description: |
+    phunky is a package for long read genome assembly (phages) that uses Flye as the assembler.
+
+extra:
+  recipe-maintainers:
+    - https://github.com/JoshuaIszatt/longass
