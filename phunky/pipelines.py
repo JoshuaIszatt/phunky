@@ -54,11 +54,14 @@ def phage_assembly_pipeline(input_file, output_dir):
         checkv(contigs, outdir)
 
     # Read mapping
+    fa_filt = os.path.join(out, f'{name}_filtered.fasta')
+    convert_bam_to_fastq(fq_filt, fa_filt)
+
     outdir = os.path.join(out, 'Read_mapping')
     basecov = read_mapping(
         contigs_fasta=contigs,
-        reads=fq_filt,
-        output_directory=out
+        reads=fa_filt,
+        output_directory=outdir
     )[0]
 
     # Using basecov.tsv and header to generate coverage graph

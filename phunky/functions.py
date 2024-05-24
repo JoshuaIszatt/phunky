@@ -131,7 +131,8 @@ def read_mapping(contigs_fasta, reads, output_directory, ram_mb=20000, mapped_sa
         f"aqhist={aqhist}",
         f"lhist={lhist}",
         f"gchist={gchist}",
-        "nodisk"
+        "nodisk",
+        'fastareadlen=600'
     ]
     if mapped_sam:
         mapped = os.path.join(output_directory, "mapped.sam")
