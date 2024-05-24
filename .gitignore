@@ -2,3 +2,4 @@
 raw/
 OUT/
 **__pycache__**
+tmp/

@@ -1,6 +1,6 @@
 import os
 import argparse
-from phunky.pipelines import (
+from .pipelines import (
     phage_assembly_pipeline,
     bacterial_assembly_pipeline,
     batch_phage_assembly_pipeline,
@@ -13,8 +13,10 @@ from phunky.pipelines import (
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Phage and Bacterial Assembly Pipeline")
-    parser.add_argument("input_file", help="Path to input BAM file or directory")
-    parser.add_argument("output_dir", help="Path to output directory")
+    parser.add_argument("-i", "--input_file", required=True, 
+                        help="Path to input BAM file or directory")
+    parser.add_argument("-o", "--output_dir", required=True,
+                        help="Path to output directory")
     parser.add_argument(
         "--pipeline",
         choices=["phage", "bacterial"],
@@ -32,7 +34,7 @@ def parse_args():
 ###_____________________________________________________RUN
 
 
-if __name__ == "__main__":
+def main():
     args = parse_args()
     if args.batch:
         if args.pipeline == "phage":
@@ -52,3 +54,7 @@ if __name__ == "__main__":
             bacterial_assembly_pipeline(args.input_file, args.output_dir)
         else:
             print("Invalid pipeline choice. Use 'phage' or 'bacterial'.")
+
+
+if __name__ == "__main__":
+    main()

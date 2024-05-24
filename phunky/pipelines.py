@@ -1,5 +1,5 @@
 import os
-from phunky.functions import (
+from .functions import (
     convert_bam_to_fastq,
     porechop_abi,
     gzip_file,
@@ -121,8 +121,12 @@ def bacterial_assembly_pipeline(input_file, output_dir):
 
 def batch_phage_assembly_pipeline(input_dir, output_dir):
     for file in os.listdir(input_dir):
+        if not file.endswith('.bam'):
+            print(f"Skipping {file}")
+            continue
+        path = os.path.join(input_dir, file)
         try:
-            phage_assembly_pipeline(file, output_dir)
+            phage_assembly_pipeline(path, output_dir)
         except Exception as e:
             print(f"ERROR {e}")
             continue
@@ -130,8 +134,11 @@ def batch_phage_assembly_pipeline(input_dir, output_dir):
 
 def batch_bacterial_assembly_pipeline(input_dir, output_dir):
     for file in os.listdir(input_dir):
+        if not file.endswith('.bam'):
+            print(f"Skipping {file}")
+        path = os.path.join(input_dir, file)
         try:
-            bacterial_assembly_pipeline(file, output_dir)
+            bacterial_assembly_pipeline(path, output_dir)
         except Exception as e:
             print(f"ERROR {e}")
             continue
