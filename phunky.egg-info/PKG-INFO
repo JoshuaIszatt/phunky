@@ -1,0 +1,15 @@
+Metadata-Version: 2.1
+Name: phunky
+Version: 0.1
+Summary: Python package to assemble phage nanopore reads
+Home-page: UNKNOWN
+Author: Joshua J Iszatt
+Author-email: joshiszatt@gmail.com
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Programming Language :: Python :: 3.10.14
+Requires-Python: >=3.10
+
+UNKNOWN
+

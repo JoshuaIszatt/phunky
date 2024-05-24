@@ -1,0 +1,3 @@
+[console_scripts]
+phunky.py = phunky.main:main
+

@@ -12,9 +12,4 @@ setup(
     ],
     python_requires=">=3.10",
     packages=find_packages(),
-    entry_points={
-        'console_scripts': [
-            'phunky.py = phunky.main:main',
-        ],
-    },
 )
