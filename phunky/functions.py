@@ -182,7 +182,5 @@ def generate_coverage_graph(header, basecov, output_directory):
     plt.xlabel("Position")
     plt.ylabel("Coverage")
     plt.grid(True)
-    plt.axhline(y=400, color='red', linestyle=':')
-    plt.axhline(y=100, color='red', linestyle='-')
     outfile = os.path.join(output_directory, f"{header}.png")
     plt.savefig(outfile, dpi=300)
