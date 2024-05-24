@@ -1,5 +1,4 @@
 # Ignore
-raw/
-OUT/
+TEST/
 **__pycache__**
 tmp/
