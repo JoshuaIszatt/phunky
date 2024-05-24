@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="phunky",
-    version="0.2",
+    version="0.3",
     description="Python package to assemble phage nanopore reads",
     author="Joshua J Iszatt",
     author_email="joshiszatt@gmail.com",

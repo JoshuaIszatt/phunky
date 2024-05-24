@@ -5,12 +5,28 @@ Long read assembly for phages:
 
 [![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)](https://pypi.org/project/phunky/)
 
-## Usage
-Install:
+## Install dependencies
+1. Download the yml environment file:
+```
+wget https://anaconda.org/JoshIszatt/phunky/2024.05.24.145220/download/phunky.yml
+```
+
+2. Create the environment
+```
+conda env create --file phunky.yml
+```
+
+3. Activate the environment:
+```
+conda activate phunky
+```
+
+4. Install phunky pipeline:
 ```
 pip install phunky
 ```
 
+## Usage
 Open a python terminal and enter:
 ```py
 import phunky
