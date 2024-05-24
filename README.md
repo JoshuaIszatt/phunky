@@ -1,5 +1,9 @@
 # Phunky
-* Long read assembly for phages
+Long read assembly for phages:
+![Phage pipeline](pipeline.png)
+**Figure 1:** Rough phage assembly pipeline, dotted line indicates where processing begins.
+
+[![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)](https://pypi.org/project/phunky/)
 
 ## Usage
 Install:
@@ -22,7 +26,7 @@ phunky.phage_assembly_pipeline('example_reads.bam', 'output_directory/')
 Batch phage assembly:
 ```py
 import phunky
-phunky.phage_assembly_pipeline('reads_directory/', 'output_directory/')
+phunky.batch_phage_assembly_pipeline('reads_directory/', 'output_directory/')
 ```
 
 
