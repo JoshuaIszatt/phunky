@@ -168,6 +168,7 @@ def generate_coverage_graph(header, basecov, output_directory):
     headers = ["ID", "Pos", "Coverage"]
     df = pd.read_csv(basecov, sep='\t', comment='#', names=headers)
     coverage = df[df['ID'].str.contains(header)]
+    mean_cov = df['Coverage'].mean()
     # Plot
     x_values = coverage['Pos']
     y_values = coverage['Coverage']
@@ -178,7 +179,7 @@ def generate_coverage_graph(header, basecov, output_directory):
              markersize=0.1,
              linestyle='-',
              color='b')
-    plt.title(f"Per base coverage for {header}")
+    plt.title(f"Per base coverage for {header} (Mean coverage: {mean_cov})")
     plt.xlabel("Position")
     plt.ylabel("Coverage")
     plt.grid(True)
