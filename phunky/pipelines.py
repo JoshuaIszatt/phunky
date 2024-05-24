@@ -23,37 +23,37 @@ def phage_assembly_pipeline(input_file, output_dir):
     os.makedirs(out, exist_ok=False)
 
     # Convert
-    fq_raw = os.path.join(output_dir, f'{name}_raw.fastq')
+    fq_raw = os.path.join(out, f'{name}_raw.fastq')
     convert_bam_to_fastq(input_file, fq_raw)
 
     # Remove adapters
-    fq_trim = os.path.join(output_dir, f'{name}_trimmed.fastq')
+    fq_trim = os.path.join(out, f'{name}_trimmed.fastq')
     porechop_abi(fq_raw, fq_trim)
 
     # gzip file
     fq_trim_gz = gzip_file(fq_trim)
 
     # Filter
-    fq_filt = os.path.join(output_dir, f'{name}_filtered.fastq')
+    fq_filt = os.path.join(out, f'{name}_filtered.fastq')
     filtlong(fq_trim_gz, fq_filt)
 
     # Reads QC
-    outdir = os.path.join(output_dir, 'nanoplot_raw')
+    outdir = os.path.join(out, 'nanoplot_raw')
     nanoplot(fq_raw, outdir)
 
-    outdir = os.path.join(output_dir, 'nanoplot_filtered')
+    outdir = os.path.join(out, 'nanoplot_filtered')
     nanoplot(fq_filt, outdir)
 
     # Genome assembly
-    outdir = os.path.join(output_dir, 'Flye_assembly')
+    outdir = os.path.join(out, 'Flye_assembly')
     contigs = flye_assembly(fq_filt, outdir)
 
     # CheckV
-    outdir = os.path.join(output_dir, 'CheckV')
+    outdir = os.path.join(out, 'CheckV')
     checkv(contigs, outdir)
 
     # Read mapping
-    outdir = os.path.join(output_dir, 'Read_mapping')
+    outdir = os.path.join(out, 'Read_mapping')
     basecov = read_mapping(
         contigs_fasta=contigs,
         reads=fq_filt,
@@ -75,33 +75,33 @@ def bacterial_assembly_pipeline(input_file, output_dir):
     os.makedirs(out, exist_ok=False)
 
     # Convert
-    fq_raw = os.path.join(output_dir, f'{name}_raw.fastq')
+    fq_raw = os.path.join(out, f'{name}_raw.fastq')
     convert_bam_to_fastq(input_file, fq_raw)
 
     # Remove adapters
-    fq_trim = os.path.join(output_dir, f'{name}_trimmed.fastq')
+    fq_trim = os.path.join(out, f'{name}_trimmed.fastq')
     porechop_abi(fq_raw, fq_trim)
 
     # gzip file
     fq_trim_gz = gzip_file(fq_trim)
 
     # Filter
-    fq_filt = os.path.join(output_dir, f'{name}_filtered.fastq')
+    fq_filt = os.path.join(out, f'{name}_filtered.fastq')
     filtlong(fq_trim_gz, fq_filt, target_bases=500000000)
 
     # Reads QC
-    outdir = os.path.join(output_dir, 'nanoplot_raw')
+    outdir = os.path.join(out, 'nanoplot_raw')
     nanoplot(fq_raw, outdir)
 
-    outdir = os.path.join(output_dir, 'nanoplot_filtered')
+    outdir = os.path.join(out, 'nanoplot_filtered')
     nanoplot(fq_filt, outdir)
 
     # Genome assembly
-    outdir = os.path.join(output_dir, 'Flye_assembly')
+    outdir = os.path.join(out, 'Flye_assembly')
     contigs = flye_assembly(fq_filt, outdir)
 
     # Read mapping
-    outdir = os.path.join(output_dir, 'Read_mapping')
+    outdir = os.path.join(out, 'Read_mapping')
     basecov = read_mapping(
         contigs_fasta=contigs,
         reads=fq_filt,

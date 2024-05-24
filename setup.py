@@ -11,5 +11,5 @@ setup(
         "Programming Language :: Python :: 3.10.14",
     ],
     python_requires=">=3.10",
-    packages=find_packages(),
+    packages=find_packages(include=['phunky', 'phunky.*']),
 )
