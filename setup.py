@@ -8,7 +8,6 @@ setup(
     author_email="joshiszatt@gmail.com",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
-        "Programming Language :: Python :: 3.10.14",
     ],
     python_requires=">=3.10",
     packages=find_packages(include=['phunky', 'phunky.*']),
