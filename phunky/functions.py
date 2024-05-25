@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-###_____________________________________________________FUNCTIONS
+# _____________________________________________________FUNCTIONS
 
 
 def gzip_file(file_in):
@@ -20,10 +20,11 @@ def gzip_file(file_in):
     except FileNotFoundError as e:
         raise Exception(e)
 
+
 def convert_bam_to_fastq(bam_file, output_file):
     command = [
         'reformat.sh',
-        f'in={bam_file}', 
+        f'in={bam_file}',
         f'out={output_file}'
     ]
     try:
@@ -45,17 +46,17 @@ def porechop_abi(input_fq, output_fq):
         raise Exception(f"porechop_abi failed: {e}")
 
 
-def filtlong(reads_fastq_gz, output_fq, minlen=1000, 
+def filtlong(reads_fastq_gz, output_fq, minlen=1000,
              target_bases=20000000, keep_percent=90):
     command = [
-        'filtlong', reads_fastq_gz, 
+        'filtlong', reads_fastq_gz,
         '--min_length', str(minlen),
-        '--keep_percent', str(keep_percent), 
+        '--keep_percent', str(keep_percent),
         '--target_bases', str(target_bases),
         '--mean_q_weight', str(10)
     ]
     try:
-        process = subprocess.run(command, check=True, 
+        process = subprocess.run(command, check=True,
                                  capture_output=True)
         out_str = process.stdout.decode('utf-8')
         with open(output_fq, 'w') as f_out:

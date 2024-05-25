@@ -68,8 +68,15 @@ phunky.batch_phage_assembly_pipeline('reads_directory/', 'output_directory/')
   - filtlong==0.2.1
 
 
-## Todo
+## General todo
+* Specify input as demux processed bam files or fastq extracted from bam
 * Create conda distribution
 * Add logging function
 * Add hash key function
 * Add multiprocessing
+
+
+## Specific todo
+* Skip the conversion step for fastq reads
+* Assembly minimum 1,000,000 bases for filtered assembly otherwise raw (BASED ON X DATA)
+* Summary file with: length, coverage, read_stats, input file type, read mapping %, assembly pass/fail

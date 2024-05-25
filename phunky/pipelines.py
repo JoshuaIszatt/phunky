@@ -13,7 +13,7 @@ from .functions import (
 )
 
 
-###_____________________________________________________PIPELINES
+# _____________________________________________________PIPELINES
 
 
 def phage_assembly_pipeline(input_file, output_dir):
@@ -48,11 +48,6 @@ def phage_assembly_pipeline(input_file, output_dir):
     outdir = os.path.join(out, 'Flye_assembly')
     contigs = flye_assembly(fq_filt, outdir)
 
-    # CheckV
-    if os.getenv('CHECKVDB'):
-        outdir = os.path.join(out, 'CheckV')
-        checkv(contigs, outdir)
-
     # Read mapping
     fa_filt = os.path.join(out, f'{name}_filtered.fasta')
     convert_bam_to_fastq(fq_filt, fa_filt)
@@ -70,6 +65,11 @@ def phage_assembly_pipeline(input_file, output_dir):
         header=header,
         basecov=basecov,
         output_directory=out)
+
+    # CheckV
+    if os.getenv('CHECKVDB'):
+        outdir = os.path.join(out, 'CheckV')
+        checkv(contigs, outdir)
 
 
 def bacterial_assembly_pipeline(input_file, output_dir):
@@ -109,7 +109,7 @@ def bacterial_assembly_pipeline(input_file, output_dir):
     basecov = read_mapping(
         contigs_fasta=contigs,
         reads=fq_filt,
-        output_directory=out
+        output_directory=outdir
     )[0]
 
     # Using basecov.tsv and header to generate coverage graph
@@ -120,7 +120,7 @@ def bacterial_assembly_pipeline(input_file, output_dir):
         output_directory=out)
 
 
-###_____________________________________________________BATCHES
+# _____________________________________________________BATCHES
 
 
 def batch_phage_assembly_pipeline(input_dir, output_dir):
