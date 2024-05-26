@@ -1,4 +1,4 @@
-name: phunky
+name: phunky2
 channels:
   - bioconda
   - conda-forge
@@ -15,3 +15,4 @@ dependencies:
   - porechop_abi==0.5.0
   - nanoplot==1.42.0
   - filtlong==0.2.1
+  - checkm-genome==1.2.2
