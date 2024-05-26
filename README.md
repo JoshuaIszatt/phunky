@@ -77,6 +77,5 @@ phunky.batch_phage_assembly_pipeline('reads_directory/', 'output_directory/')
 
 
 ## Specific todo
-* Skip the conversion step for fastq reads
 * Assembly minimum 1,000,000 bases for filtered assembly otherwise raw (BASED ON X DATA)
 * Summary file with: length, coverage, read_stats, input file type, read mapping %, assembly pass/fail
