@@ -23,8 +23,16 @@ def phage_assembly_pipeline(input_file, output_dir):
     os.makedirs(out, exist_ok=False)
 
     # Convert
-    fq_raw = os.path.join(out, f'{name}_raw.fastq')
-    convert_bam_to_fastq(input_file, fq_raw)
+    if input_file.endswith('.bam'):
+        fq_raw = os.path.join(out, f'{name}_raw.fastq')
+        convert_bam_to_fastq(input_file, fq_raw)
+    elif input_file.endswith('.fastq.gz'):
+        fq_raw = os.path.join(out, f'{name}_raw.fastq')
+        convert_bam_to_fastq(input_file, fq_raw)
+    elif input_file.endswith('.fastq'):
+        fq_raw = input_file
+    else:
+        raise Exception("File type not accepted")
 
     # Remove adapters
     fq_trim = os.path.join(out, f'{name}_trimmed.fastq')
@@ -79,8 +87,16 @@ def bacterial_assembly_pipeline(input_file, output_dir):
     os.makedirs(out, exist_ok=False)
 
     # Convert
-    fq_raw = os.path.join(out, f'{name}_raw.fastq')
-    convert_bam_to_fastq(input_file, fq_raw)
+    if input_file.endswith('.bam'):
+        fq_raw = os.path.join(out, f'{name}_raw.fastq')
+        convert_bam_to_fastq(input_file, fq_raw)
+    elif input_file.endswith('.fastq.gz'):
+        fq_raw = os.path.join(out, f'{name}_raw.fastq')
+        convert_bam_to_fastq(input_file, fq_raw)
+    elif input_file.endswith('.fastq'):
+        fq_raw = input_file
+    else:
+        raise Exception("File type not accepted")
 
     # Remove adapters
     fq_trim = os.path.join(out, f'{name}_trimmed.fastq')
@@ -105,10 +121,13 @@ def bacterial_assembly_pipeline(input_file, output_dir):
     contigs = flye_assembly(fq_filt, outdir)
 
     # Read mapping
+    fa_filt = os.path.join(out, f'{name}_filtered.fasta')
+    convert_bam_to_fastq(fq_filt, fa_filt)
+
     outdir = os.path.join(out, 'Read_mapping')
     basecov = read_mapping(
         contigs_fasta=contigs,
-        reads=fq_filt,
+        reads=fa_filt,
         output_directory=outdir
     )[0]
 
@@ -125,9 +144,6 @@ def bacterial_assembly_pipeline(input_file, output_dir):
 
 def batch_phage_assembly_pipeline(input_dir, output_dir):
     for file in os.listdir(input_dir):
-        if not file.endswith('.bam'):
-            print(f"Skipping {file}")
-            continue
         path = os.path.join(input_dir, file)
         try:
             phage_assembly_pipeline(path, output_dir)
@@ -138,8 +154,6 @@ def batch_phage_assembly_pipeline(input_dir, output_dir):
 
 def batch_bacterial_assembly_pipeline(input_dir, output_dir):
     for file in os.listdir(input_dir):
-        if not file.endswith('.bam'):
-            print(f"Skipping {file}")
         path = os.path.join(input_dir, file)
         try:
             bacterial_assembly_pipeline(path, output_dir)
