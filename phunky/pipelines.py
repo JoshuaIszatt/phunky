@@ -71,15 +71,25 @@ def assembly_pipeline(input_file, output_dir, isolate='phage'):
     outdir = os.path.join(out, 'nanoplot_raw')
     nanoplot(fq_raw, outdir)
 
+    outdir = os.path.join(out, 'nanoplot_trimmed')
+    nanoplot(fq_trim, outdir)
+
     outdir = os.path.join(out, 'nanoplot_filtered')
-    nanoplot(fq_filt, outdir)
+    filt_bases = nanoplot(fq_filt, outdir)
 
     # Genome assembly
     outdir = os.path.join(out, 'Flye_assembly')
-    contigs = flye_assembly(fq_filt, outdir)
+    if int(filt_bases) > 1000000:
+        print("Using filtered reads for assembly")
+        read_type = 'filtered'
+        contigs = flye_assembly(fq_filt, outdir)
+    else:
+        print("Using trimmed reads for assembly")
+        read_type = 'trimmed'
+        contigs = flye_assembly(fq_trim, outdir)
 
     # Read mapping
-    fa_filt = os.path.join(out, f'{name}_filtered.fasta')
+    fa_filt = os.path.join(out, f'{name}_{read_type}.fasta')
     convert_bam_to_fastq(fq_filt, fa_filt)
 
     outdir = os.path.join(out, 'Read_mapping')
@@ -101,7 +111,6 @@ def assembly_pipeline(input_file, output_dir, isolate='phage'):
         outdir = os.path.join(out, 'CheckV')
         checkv(contigs, outdir)
 
-# todo: Assembly minimum 1,000,000 bases for filtered assembly otherwise raw
 # todo: Create a summary file
 
 # _____________________________________________________BATCHES

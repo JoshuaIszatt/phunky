@@ -77,6 +77,10 @@ def nanoplot(reads_fastq_gz, output_directory, barcode=None):
         command.extend(['-p', barcode])
     try:
         subprocess.run(command, check=True)
+        stats = os.path.join(output_directory, 'NanoStats.txt')
+        df = pd.read_csv(stats, sep='\t')
+        number_of_bases = df.loc[df['Metrics'] == 'number_of_bases', 'dataset'].values[0]
+        return number_of_bases
     except Exception as e:
         raise Exception(f"NanoPlot failed: {e}")
 
