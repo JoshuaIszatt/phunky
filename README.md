@@ -43,9 +43,11 @@ dir(phunky)
 ```
 
 Quick phage assembly:
+
 ```py
 import phunky
-phunky.phage_assembly_pipeline('example_reads.bam', 'output_directory/')
+
+phunky.assembly_pipeline('example_reads.bam', 'output_directory/')
 ```
 
 Batch phage assembly:
@@ -55,7 +57,7 @@ phunky.batch_phage_assembly_pipeline('reads_directory/', 'output_directory/')
 ```
 
 
-### dependencies:
+## Dependencies:
   - python>=3
   - checkv==1.0.3
   - biopython==1.83
@@ -74,8 +76,3 @@ phunky.batch_phage_assembly_pipeline('reads_directory/', 'output_directory/')
 * Add logging function
 * Add hash key function
 * Add multiprocessing
-
-
-## Specific todo
-* Assembly minimum 1,000,000 bases for filtered assembly otherwise raw (BASED ON X DATA)
-* Summary file with: length, coverage, read_stats, input file type, read mapping %, assembly pass/fail

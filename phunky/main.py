@@ -1,7 +1,7 @@
 import os
 import argparse
 from .pipelines import (
-    phage_assembly_pipeline,
+    assembly_pipeline,
     bacterial_assembly_pipeline,
     batch_phage_assembly_pipeline,
     batch_bacterial_assembly_pipeline
@@ -48,7 +48,7 @@ def main():
     else:
         if args.pipeline == "phage":
             print("Running Phunky pipelines")
-            phage_assembly_pipeline(args.input_file, args.output_dir)
+            assembly_pipeline(args.input_file, args.output_dir)
         elif args.pipeline == "bacterial":
             print("Running Phunky pipelines")
             bacterial_assembly_pipeline(args.input_file, args.output_dir)

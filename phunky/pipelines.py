@@ -1,4 +1,5 @@
 import os
+import sys
 from .functions import (
     convert_bam_to_fastq,
     porechop_abi,
@@ -16,23 +17,37 @@ from .functions import (
 # _____________________________________________________PIPELINES
 
 
-def phage_assembly_pipeline(input_file, output_dir):
-    # Create output location
-    name = os.path.basename(str(input_file)[:-4])
-    out = os.path.join(output_dir, name)
-    os.makedirs(out, exist_ok=False)
+def assembly_pipeline(input_file, output_dir, isolate='phage'):
+    # Check if isolate value is allowed
+    if isolate not in ['phage', 'bacterial', 'fungal']:
+        raise ValueError("Isolate must be one of 'phage', 'bacterial', or 'fungal' ")
 
-    # Convert
+    # Create output location
+    extensions = ['.bam', '.fastq', '.fastq.gz']
+    basename = os.path.basename(str(input_file))
+    name = out = None
+    for extension in extensions:
+        if basename.endswith(extension):
+            name = basename[:-len(extension)]
+            out = os.path.join(output_dir, name)
+            os.makedirs(out, exist_ok=False)
+            break
+        else:
+            raise Exception("File type not accepted")
+
+    # Ensure variables are set
+    if out is None or name is None:
+        raise Exception("Could not determine output location or filename")
+
+    # Convert if required
     if input_file.endswith('.bam'):
         fq_raw = os.path.join(out, f'{name}_raw.fastq')
         convert_bam_to_fastq(input_file, fq_raw)
     elif input_file.endswith('.fastq.gz'):
         fq_raw = os.path.join(out, f'{name}_raw.fastq')
         convert_bam_to_fastq(input_file, fq_raw)
-    elif input_file.endswith('.fastq'):
-        fq_raw = input_file
     else:
-        raise Exception("File type not accepted")
+        fq_raw = input_file
 
     # Remove adapters
     fq_trim = os.path.join(out, f'{name}_trimmed.fastq')
@@ -42,8 +57,15 @@ def phage_assembly_pipeline(input_file, output_dir):
     fq_trim_gz = gzip_file(fq_trim)
 
     # Filter
+    target = 20000000
+    if isolate == 'phage':
+        target = 20000000
+    elif isolate == 'bacterial':
+        target = 500000000
+    elif isolate == 'fungal':
+        target = 10000000000  # Unsure of this one, check!
     fq_filt = os.path.join(out, f'{name}_filtered.fastq')
-    filtlong(fq_trim_gz, fq_filt)
+    filtlong(fq_trim_gz, fq_filt, target)
 
     # Reads QC
     outdir = os.path.join(out, 'nanoplot_raw')
@@ -79,65 +101,8 @@ def phage_assembly_pipeline(input_file, output_dir):
         outdir = os.path.join(out, 'CheckV')
         checkv(contigs, outdir)
 
-
-def bacterial_assembly_pipeline(input_file, output_dir):
-    # Create output location
-    name = os.path.basename(str(input_file)[:-4])
-    out = os.path.join(output_dir, name)
-    os.makedirs(out, exist_ok=False)
-
-    # Convert
-    if input_file.endswith('.bam'):
-        fq_raw = os.path.join(out, f'{name}_raw.fastq')
-        convert_bam_to_fastq(input_file, fq_raw)
-    elif input_file.endswith('.fastq.gz'):
-        fq_raw = os.path.join(out, f'{name}_raw.fastq')
-        convert_bam_to_fastq(input_file, fq_raw)
-    elif input_file.endswith('.fastq'):
-        fq_raw = input_file
-    else:
-        raise Exception("File type not accepted")
-
-    # Remove adapters
-    fq_trim = os.path.join(out, f'{name}_trimmed.fastq')
-    porechop_abi(fq_raw, fq_trim)
-
-    # gzip file
-    fq_trim_gz = gzip_file(fq_trim)
-
-    # Filter
-    fq_filt = os.path.join(out, f'{name}_filtered.fastq')
-    filtlong(fq_trim_gz, fq_filt, target_bases=500000000)
-
-    # Reads QC
-    outdir = os.path.join(out, 'nanoplot_raw')
-    nanoplot(fq_raw, outdir)
-
-    outdir = os.path.join(out, 'nanoplot_filtered')
-    nanoplot(fq_filt, outdir)
-
-    # Genome assembly
-    outdir = os.path.join(out, 'Flye_assembly')
-    contigs = flye_assembly(fq_filt, outdir)
-
-    # Read mapping
-    fa_filt = os.path.join(out, f'{name}_filtered.fasta')
-    convert_bam_to_fastq(fq_filt, fa_filt)
-
-    outdir = os.path.join(out, 'Read_mapping')
-    basecov = read_mapping(
-        contigs_fasta=contigs,
-        reads=fa_filt,
-        output_directory=outdir
-    )[0]
-
-    # Using basecov.tsv and header to generate coverage graph
-    header = extract_contig_header(contigs)[0]
-    generate_coverage_graph(
-        header=header,
-        basecov=basecov,
-        output_directory=out)
-
+# todo: Assembly minimum 1,000,000 bases for filtered assembly otherwise raw
+# todo: Create a summary file
 
 # _____________________________________________________BATCHES
 
@@ -146,7 +111,7 @@ def batch_phage_assembly_pipeline(input_dir, output_dir):
     for file in os.listdir(input_dir):
         path = os.path.join(input_dir, file)
         try:
-            phage_assembly_pipeline(path, output_dir)
+            assembly_pipeline(path, output_dir, 'phage')
         except Exception as e:
             print(f"ERROR {e}")
             continue
@@ -156,7 +121,7 @@ def batch_bacterial_assembly_pipeline(input_dir, output_dir):
     for file in os.listdir(input_dir):
         path = os.path.join(input_dir, file)
         try:
-            bacterial_assembly_pipeline(path, output_dir)
+            assembly_pipeline(path, output_dir, 'bacterial')
         except Exception as e:
             print(f"ERROR {e}")
             continue
