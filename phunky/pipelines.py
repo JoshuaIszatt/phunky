@@ -17,10 +17,11 @@ from .functions import (
 # _____________________________________________________PIPELINES
 
 
-def assembly_pipeline(input_file, output_dir, isolate='phage'):
+def assembly_pipeline(input_file, output_dir, isolate='unknown', log=False):
+
     # Check if isolate value is allowed
-    if isolate not in ['phage', 'bacterial', 'fungal']:
-        raise ValueError("Isolate must be one of 'phage', 'bacterial', or 'fungal' ")
+    if isolate not in ['phage', 'bacterial', 'fungal', 'unknown']:
+        raise ValueError("Isolate must be: 'phage', 'bacterial', 'fungal' or 'unknown' (Skip filtering) ")
 
     # Create output location
     extensions = ['.bam', '.fastq', '.fastq.gz']
@@ -53,40 +54,59 @@ def assembly_pipeline(input_file, output_dir, isolate='phage'):
     fq_trim = os.path.join(out, f'{name}_trimmed.fastq')
     porechop_abi(fq_raw, fq_trim)
 
+    # Raw QC
+    outdir = os.path.join(out, 'nanoplot_raw')
+    nanoplot(fq_raw, outdir)
+
+    # Trimmed QC
+    outdir = os.path.join(out, 'nanoplot_trimmed')
+    nanoplot(fq_trim, outdir)
+
     # gzip file
     fq_trim_gz = gzip_file(fq_trim)
 
     # Filter
-    target = 20000000
+    target = True
     if isolate == 'phage':
-        target = 20000000
+        target = 30000000
     elif isolate == 'bacterial':
         target = 500000000
     elif isolate == 'fungal':
         target = 10000000000  # Unsure of this one, check!
-    fq_filt = os.path.join(out, f'{name}_filtered.fastq')
-    filtlong(fq_trim_gz, fq_filt, target)
+    elif isolate == 'unknown':
+        target = False
 
-    # Reads QC
-    outdir = os.path.join(out, 'nanoplot_raw')
-    nanoplot(fq_raw, outdir)
+    fq_filt = False
+    if target:
+        fq_filt = os.path.join(out, f'{name}_filtered.fastq')
+        filtlong(fq_trim_gz, fq_filt, target)
 
-    outdir = os.path.join(out, 'nanoplot_trimmed')
-    nanoplot(fq_trim, outdir)
-
-    outdir = os.path.join(out, 'nanoplot_filtered')
-    filt_bases = nanoplot(fq_filt, outdir)
+        # Filtered QC
+        outdir = os.path.join(out, 'nanoplot_filtered')
+        nanoplot(fq_filt, outdir)
 
     # Genome assembly
     outdir = os.path.join(out, 'Flye_assembly')
-    if int(filt_bases) > 1000000:
+    read_type = None
+    contigs = False
+
+    if fq_filt:
         print("Using filtered reads for assembly")
         read_type = 'filtered'
         contigs = flye_assembly(fq_filt, outdir)
-    else:
-        print("Using trimmed reads for assembly")
+
+    if not contigs:
+        print("Filtered assembly failed. Using trimmed reads for assembly")
         read_type = 'trimmed'
         contigs = flye_assembly(fq_trim, outdir)
+
+    if not contigs:
+        print("Trimmed reads assembly failed. Using raw reads for assembly")
+        read_type = 'raw'
+        contigs = flye_assembly(fq_raw, outdir)
+
+    if not contigs:
+        raise Exception("Read assembly has failed")
 
     # Read mapping
     fa_filt = os.path.join(out, f'{name}_{read_type}.fasta')
@@ -111,26 +131,16 @@ def assembly_pipeline(input_file, output_dir, isolate='phage'):
         outdir = os.path.join(out, 'CheckV')
         checkv(contigs, outdir)
 
-# todo: Create a summary file
 
 # _____________________________________________________BATCHES
 
 
-def batch_phage_assembly_pipeline(input_dir, output_dir):
+def batch_assembly_pipeline(input_dir, output_dir, isolates="unknown"):
+    os.makedirs(output_dir, exist_ok=True)
     for file in os.listdir(input_dir):
         path = os.path.join(input_dir, file)
         try:
-            assembly_pipeline(path, output_dir, 'phage')
-        except Exception as e:
-            print(f"ERROR {e}")
-            continue
-
-
-def batch_bacterial_assembly_pipeline(input_dir, output_dir):
-    for file in os.listdir(input_dir):
-        path = os.path.join(input_dir, file)
-        try:
-            assembly_pipeline(path, output_dir, 'bacterial')
+            assembly_pipeline(path, output_dir, isolates)
         except Exception as e:
             print(f"ERROR {e}")
             continue

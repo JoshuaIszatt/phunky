@@ -4,9 +4,29 @@ import gzip
 from Bio import SeqIO
 import matplotlib.pyplot as plt
 import pandas as pd
+import logging
+import logging.config
+import json
+import importlib.resources
 
 
-# _____________________________________________________FUNCTIONS
+# _____________________________________________________BASE
+
+
+def configure_log(location):
+    logfile = os.path.join(location, 'phanta.log')
+    # Load logging configuration
+    with importlib.resources.open_text('phanta', 'logging.json') as f:
+        config = json.load(f)
+    # Update the log file path in the logging configuration
+    if 'handlers' in config and 'file' in config['handlers']:
+        config['handlers']['file']['filename'] = logfile
+    logging.config.dictConfig(config)
+    logger = logging.getLogger(__name__)
+    logger.info(f'Log file set: {logfile}')
+    return logger
+
+# _____________________________________________________BIO
 
 
 def gzip_file(file_in):
@@ -99,6 +119,8 @@ def flye_assembly(reads_fastq, output_directory, threads=8):
         if os.path.exists(contigs):
             print('Flye successful')
             return contigs
+        else:
+            return False
     except Exception as e:
         raise Exception(f"Flye assembly failed: {e}")
 
