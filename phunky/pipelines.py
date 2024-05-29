@@ -92,20 +92,17 @@ def assembly_pipeline(input_file, output_dir, isolate='unknown', log=False):
     if fq_filt:
         print("Using filtered reads for assembly")
         read_type = 'filtered'
-        contigs = flye_assembly(fq_filt, outdir)
+        contigs = flye_assembly(fq_filt, outdir, raise_on_fail=False)
 
     if not contigs:
         print("Filtered assembly failed. Using trimmed reads for assembly")
         read_type = 'trimmed'
-        contigs = flye_assembly(fq_trim, outdir)
+        contigs = flye_assembly(fq_trim, outdir, raise_on_fail=False)
 
     if not contigs:
         print("Trimmed reads assembly failed. Using raw reads for assembly")
         read_type = 'raw'
         contigs = flye_assembly(fq_raw, outdir)
-
-    if not contigs:
-        raise Exception("Read assembly has failed")
 
     # Read mapping
     fa_filt = os.path.join(out, f'{name}_{read_type}.fasta')

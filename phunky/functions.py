@@ -105,7 +105,8 @@ def nanoplot(reads_fastq_gz, output_directory, barcode=None):
         raise Exception(f"NanoPlot failed: {e}")
 
 
-def flye_assembly(reads_fastq, output_directory, threads=8):
+def flye_assembly(reads_fastq, output_directory, threads=8,
+                  raise_on_fail=True):
     command = [
         'flye',
         '--nano-hq', reads_fastq,
@@ -118,11 +119,12 @@ def flye_assembly(reads_fastq, output_directory, threads=8):
         contigs = os.path.join(output_directory, 'assembly.fasta')
         if os.path.exists(contigs):
             print('Flye successful')
-            return contigs
-        else:
-            return False
+        return contigs
     except Exception as e:
-        raise Exception(f"Flye assembly failed: {e}")
+        if raise_on_fail:
+            raise Exception(f"Flye assembly failed: {e}")
+        else:
+            return None
 
 
 def checkv(contigs, output_directory):

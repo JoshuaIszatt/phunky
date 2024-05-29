@@ -3,25 +3,31 @@
     "disable_existing_loggers": false,
     "formatters": {
         "simple": {
-            "format": "[PHANTA: %(asctime)s]\t[%(levelname)s] %(name)s: %(message)s"
+            "format": "[PHUNKY: %(asctime)s]\t[%(levelname)s] %(name)s: %(message)s"
         },
         "detailed": {
-            "format": "[PHANTA: %(asctime)s T%H:%M%S%z]\t[%(levelname)s] %(module)s %(name)s: %(message)s",
+            "format": "[PHUNKY: %(asctime)s T%H:%M%S%z]\t[%(levelname)s] %(module)s %(name)s: %(message)s",
             "datefmt": "%Y-%m-%d"
         }
     },
     "handlers": {
         "stderr": {
             "class": "logging.StreamHandler",
-            "level": "DEBUG",
+            "level": "WARNING",
             "formatter": "simple",
             "stream": "ext://sys.stderr"
+        },
+        "stdout": {
+            "class": "logging.StreamHandler",
+            "level": "INFO",
+            "formatter": "simple",
+            "stream": "ext://sys.stdout"
         },
         "file": {
             "class": "logging.handlers.RotatingFileHandler",
             "level": "INFO",
             "formatter": "detailed",
-            "filename": "phanta.log",
+            "filename": "phunky.log",
             "maxBytes": 5000000,
             "backupCount": 5
         }
@@ -31,6 +37,7 @@
             "level": "DEBUG",
             "handlers": [
                 "stderr",
+                "stdout",
                 "file"
             ]
         }
