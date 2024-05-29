@@ -132,11 +132,16 @@ def assembly_pipeline(input_file, output_dir, isolate='unknown', log=False):
 
 
 def batch_assembly_pipeline(input_dir, output_dir, isolates="unknown"):
+    input_dir = os.path.expanduser(input_dir)
+    output_dir = os.path.expanduser(output_dir)
     os.makedirs(output_dir, exist_ok=True)
     for file in os.listdir(input_dir):
         path = os.path.join(input_dir, file)
         try:
-            assembly_pipeline(path, output_dir, isolates)
+            assembly_pipeline(
+                input_file=path,
+                output_dir=output_dir
+            )
         except Exception as e:
             print(f"ERROR {e}")
             continue
