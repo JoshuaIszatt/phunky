@@ -1,5 +1,4 @@
 import os
-import sys
 from .functions import (
     convert_bam_to_fastq,
     porechop_abi,
