@@ -1,5 +1,6 @@
 import os
 from .functions import (
+    configure_log,
     convert_bam_to_fastq,
     porechop_abi,
     gzip_file,
@@ -16,11 +17,16 @@ from .functions import (
 # _____________________________________________________PIPELINES
 
 
-def assembly_pipeline(input_file, output_dir, isolate='unknown', log=False):
+def assembly_pipeline(input_file, output_dir, isolate='unknown', logfile_location=None):
+    # Setting logfile
+    if logfile_location is None:
+        configure_log()
+    else:
+        configure_log(logfile_location)
 
     # Check if isolate value is allowed
     if isolate not in ['phage', 'bacterial', 'fungal', 'unknown']:
-        raise ValueError("Isolate must be: 'phage', 'bacterial', 'fungal' or 'unknown' (Skip filtering) ")
+        raise ValueError("Isolate must be: 'phage', 'bacterial', 'fungal' or 'unknown' (Skip filtering)")
 
     # Create output location
     extensions = ['.bam', '.fastq', '.fastq.gz']

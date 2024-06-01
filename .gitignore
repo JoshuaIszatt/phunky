@@ -1,3 +1,4 @@
 # Ignore
 **__pycache__**
 tmp/
+phunky/phunky.log

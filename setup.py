@@ -15,4 +15,7 @@ setup(
     ],
     python_requires=">=3.10",
     packages=find_packages(include=['phunky', 'phunky.*']),
+    package_data={
+        'phunky': ['logging.json'],
+    },
 )

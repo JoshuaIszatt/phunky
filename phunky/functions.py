@@ -1,4 +1,5 @@
 import os
+import json
 import subprocess
 import gzip
 from Bio import SeqIO
@@ -6,25 +7,33 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import logging
 import logging.config
-import json
 import importlib.resources
 
 
 # _____________________________________________________BASE
 
 
-def configure_log(location):
-    logfile = os.path.join(location, 'phanta.log')
-    # Load logging configuration
-    with importlib.resources.open_text('phanta', 'logging.json') as f:
+def configure_log(location=None, log_config=None):
+    # Default logging settings if needed
+    if log_config is None:
+        log_config = importlib.resources.files("phunky") / "logging.json"
+    # Read logging configuration
+    with open(str(log_config), "r") as f:
         config = json.load(f)
+    # Set the log file location
+    logfile = 'phunky.log'
+    if location is None:
+        location = str(importlib.resources.files('phunky'))
+    logfile = os.path.join(location, logfile)
     # Update the log file path in the logging configuration
     if 'handlers' in config and 'file' in config['handlers']:
         config['handlers']['file']['filename'] = logfile
+    # Configure and set first message
     logging.config.dictConfig(config)
     logger = logging.getLogger(__name__)
-    logger.info(f'Log file set: {logfile}')
+    logger.info(f"Logging to {logfile}")
     return logger
+
 
 # _____________________________________________________BIO
 
