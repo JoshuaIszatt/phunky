@@ -13,12 +13,12 @@ import importlib.resources
 # _____________________________________________________BASE
 
 
-def configure_log(location=None, log_config=None):
+def configure_log(location=None, configuration=None):
     # Default logging settings if needed
-    if log_config is None:
-        log_config = importlib.resources.files("phunky") / "logging.json"
+    if configuration is None:
+        configuration = importlib.resources.files("phunky") / "logging.json"
     # Read logging configuration
-    with open(str(log_config), "r") as f:
+    with open(str(configuration), "r") as f:
         config = json.load(f)
     # Set the log file location
     logfile = 'phunky.log'

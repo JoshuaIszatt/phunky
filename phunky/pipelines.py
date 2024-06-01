@@ -17,12 +17,14 @@ from .functions import (
 # _____________________________________________________PIPELINES
 
 
-def assembly_pipeline(input_file, output_dir, isolate='unknown', logfile_location=None):
+def assembly_pipeline(input_file, output_dir, isolate='unknown',
+                      logfile_location=None, logfile_configuration=None):
     # Setting logfile
-    if logfile_location is None:
-        configure_log()
-    else:
-        configure_log(logfile_location)
+    logger = configure_log(
+        location=logfile_location,
+        configuration=logfile_configuration
+    )
+    logger.info(f'Beginning assembly pipeline: {os.path.basename(input_file)}')
 
     # Check if isolate value is allowed
     if isolate not in ['phage', 'bacterial', 'fungal', 'unknown']:
@@ -137,7 +139,29 @@ def assembly_pipeline(input_file, output_dir, isolate='unknown', logfile_locatio
 # _____________________________________________________BATCHES
 
 
-def batch_assembly_pipeline(input_dir, output_dir, isolates="unknown"):
+def batch_assembly_pipeline(input_dir, output_dir, isolate=None,
+                            logfile_location=None, logfile_configuration=None):
+    # Setting logfile
+    logger = configure_log(
+        location=logfile_location,
+        configuration=logfile_configuration
+    )
+
+    # Check inputs
+    if not os.path.isdir(input_dir):
+        e = f'Input directory {input_dir} is not a directory'
+        logger.error(e)
+        raise ValueError(e)
+    else:
+        e = f'Beginning assembly pipeline: input_dir: {input_dir} output_dir: {output_dir}'
+        logger.info(e)
+
+    # Phage default isolate
+    if isolate is None:
+        logger.warning('Isolate type not specified, defaulting to phage')
+        isolate = 'phage'
+
+    # Batch pipeline
     input_dir = os.path.expanduser(input_dir)
     output_dir = os.path.expanduser(output_dir)
     os.makedirs(output_dir, exist_ok=True)
@@ -146,7 +170,10 @@ def batch_assembly_pipeline(input_dir, output_dir, isolates="unknown"):
         try:
             assembly_pipeline(
                 input_file=path,
-                output_dir=output_dir
+                output_dir=output_dir,
+                logfile_location=logfile_location,
+                logfile_configuration=logfile_configuration,
+                isolate=isolate
             )
         except Exception as e:
             print(f"ERROR {e}")
