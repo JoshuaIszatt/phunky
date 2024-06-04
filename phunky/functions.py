@@ -32,6 +32,7 @@ def configure_log(location=None, configuration=None):
     logging.config.dictConfig(config)
     logger = logging.getLogger(__name__)
     logger.info(f"Logging to {logfile}")
+    logger.info(f"Log configuration: {str(config)}")
     return logger
 
 

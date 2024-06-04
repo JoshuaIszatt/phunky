@@ -18,17 +18,31 @@ from .functions import (
 
 
 def assembly_pipeline(input_file, output_dir, isolate='unknown',
-                      logfile_location=None, logfile_configuration=None):
-    # Setting logfile
-    logger = configure_log(
-        location=logfile_location,
-        configuration=logfile_configuration
-    )
-    logger.info(f'Beginning assembly pipeline: {os.path.basename(input_file)}')
+                      logger=None, logfile_location=None, logfile_configuration=None):
+    # Setting logger if None has been passed
+    if logger is None:
+        logger = configure_log(
+            location=logfile_location,
+            configuration=logfile_configuration
+        )
+
+    # Attempt to use logger
+    try:
+        logger.info(f'Beginning assembly pipeline: {os.path.basename(input_file)}')
+    except Exception as e:
+        raise Exception(f"Logging error: {e}")
 
     # Check if isolate value is allowed
-    if isolate not in ['phage', 'bacterial', 'fungal', 'unknown']:
-        raise ValueError("Isolate must be: 'phage', 'bacterial', 'fungal' or 'unknown' (Skip filtering)")
+    if isolate == 'phage':
+        target = 30000000 # Approx 100 X coverage for a 300kb genome
+    elif isolate == 'bacterial':
+        target = 500000000 # Approx 100 X coverage for a 5mb genome
+    elif isolate == 'fungal':
+        target = 5000000000  # Approx 100 X coverage for a 50mb genome
+    elif isolate == 'unknown':
+        target = 10000000000
+    else:
+        raise ValueError("Isolate must be: 'phage', 'bacterial', 'fungal' or 'unknown'")
 
     # Create output location
     extensions = ['.bam', '.fastq', '.fastq.gz']
@@ -38,6 +52,7 @@ def assembly_pipeline(input_file, output_dir, isolate='unknown',
         if basename.endswith(extension):
             name = basename[:-len(extension)]
             out = os.path.join(output_dir, name)
+            logger.info(f'File type ({extension}) accepted: output_directory: {out}')
             os.makedirs(out, exist_ok=False)
             break
         else:
@@ -73,24 +88,13 @@ def assembly_pipeline(input_file, output_dir, isolate='unknown',
     fq_trim_gz = gzip_file(fq_trim)
 
     # Filter
-    target = True
-    if isolate == 'phage':
-        target = 30000000
-    elif isolate == 'bacterial':
-        target = 500000000
-    elif isolate == 'fungal':
-        target = 10000000000  # Unsure of this one, check!
-    elif isolate == 'unknown':
-        target = False
+    fq_filt = os.path.join(out, f'{name}_filtered.fastq')
+    filtlong(fq_trim_gz, fq_filt,
+             target_bases=target)
 
-    fq_filt = False
-    if target:
-        fq_filt = os.path.join(out, f'{name}_filtered.fastq')
-        filtlong(fq_trim_gz, fq_filt, target)
-
-        # Filtered QC
-        outdir = os.path.join(out, 'nanoplot_filtered')
-        nanoplot(fq_filt, outdir)
+    # Filtered QC
+    outdir = os.path.join(out, 'nanoplot_filtered')
+    nanoplot(fq_filt, outdir)
 
     # Genome assembly
     outdir = os.path.join(out, 'Flye_assembly')
@@ -140,12 +144,13 @@ def assembly_pipeline(input_file, output_dir, isolate='unknown',
 
 
 def batch_assembly_pipeline(input_dir, output_dir, isolate=None,
-                            logfile_location=None, logfile_configuration=None):
-    # Setting logfile
-    logger = configure_log(
-        location=logfile_location,
-        configuration=logfile_configuration
-    )
+                            logger=None, logfile_location=None, logfile_configuration=None):
+    # Setting logger if None has been passed
+    if logger is None:
+        logger = configure_log(
+            location=logfile_location,
+            configuration=logfile_configuration
+        )
 
     # Check inputs
     if not os.path.isdir(input_dir):
@@ -153,13 +158,17 @@ def batch_assembly_pipeline(input_dir, output_dir, isolate=None,
         logger.error(e)
         raise ValueError(e)
     else:
-        e = f'Beginning assembly pipeline: input_dir: {input_dir} output_dir: {output_dir}'
+        e = f'Batch assembly pipeline:'
         logger.info(e)
+        logger.info(f"input_dir: {input_dir}")
+        logger.info(f"output_dir: {output_dir}")
 
     # Phage default isolate
     if isolate is None:
         logger.warning('Isolate type not specified, defaulting to phage')
         isolate = 'phage'
+    else:
+        logger.info(f'Isolate type set to: {isolate}')
 
     # Batch pipeline
     input_dir = os.path.expanduser(input_dir)
@@ -171,10 +180,9 @@ def batch_assembly_pipeline(input_dir, output_dir, isolate=None,
             assembly_pipeline(
                 input_file=path,
                 output_dir=output_dir,
-                logfile_location=logfile_location,
-                logfile_configuration=logfile_configuration,
+                logger=logger,
                 isolate=isolate
             )
         except Exception as e:
-            print(f"ERROR {e}")
+            logger.error(f"Pipeline failure ({file}): {e}")
             continue
