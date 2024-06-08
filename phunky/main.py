@@ -1,10 +1,9 @@
 import os
+import sys
 import argparse
-from .pipelines import (
+from phunky.pipelines import (
     assembly_pipeline,
-    bacterial_assembly_pipeline,
-    batch_phage_assembly_pipeline,
-    batch_bacterial_assembly_pipeline
+    batch_assembly_pipeline
 )
 
 
@@ -38,20 +37,20 @@ def main():
     args = parse_args()
     if args.batch:
         if args.pipeline == "phage":
-            print("Running a Phunky pipeline")
-            batch_phage_assembly_pipeline(args.input_file, args.output_dir)
+            batch_assembly_pipeline(args.input_file, args.output_dir)
         elif args.pipeline == "bacterial":
-            print("Running a Phunky pipeline")
-            batch_bacterial_assembly_pipeline(args.input_file, args.output_dir)
+            batch_assembly_pipeline(args.input_file, args.output_dir)
         else:
             print("Invalid pipeline choice. Use 'phage' or 'bacterial'.")
+            sys.exit(0)
+        print("Running a Phunky pipeline")
     else:
         if args.pipeline == "phage":
             print("Running Phunky pipelines")
             assembly_pipeline(args.input_file, args.output_dir)
         elif args.pipeline == "bacterial":
             print("Running Phunky pipelines")
-            bacterial_assembly_pipeline(args.input_file, args.output_dir)
+            assembly_pipeline(args.input_file, args.output_dir)
         else:
             print("Invalid pipeline choice. Use 'phage' or 'bacterial'.")
 
