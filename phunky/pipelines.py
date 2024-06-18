@@ -144,7 +144,7 @@ def assembly_pipeline(input_file, output_dir, isolate='phage',
 
     # Using basecov.tsv and header to generate coverage graph
     logger.info("Generating coverage graph")
-    header = extract_contig_header(contigs)[0]
+    header, seq_len = extract_contig_header(contigs)
     generate_coverage_graph(
         header=header,
         basecov=basecov,
@@ -157,7 +157,8 @@ def assembly_pipeline(input_file, output_dir, isolate='phage',
         checkv(contigs, outdir)
 
     # Finish pipeline
-    logger.info(f"Pipeline complete: {basename}")
+    logger.info(f"Pipeline complete:")
+    logger.info(f"Putative genome: {header}, Length: {seq_len}bp")
 
 # _____________________________________________________BATCHES
 
