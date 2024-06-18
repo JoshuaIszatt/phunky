@@ -24,6 +24,8 @@ def configure_log(location=None, configuration=None):
     logfile = 'phunky.log'
     if location is None:
         location = str(importlib.resources.files('phunky'))
+    # Create logfile location and file if it does not exist
+    os.makedirs(location, exist_ok=True)
     logfile = os.path.join(location, logfile)
     # Update the log file path in the logging configuration
     if 'handlers' in config and 'file' in config['handlers']:
@@ -40,6 +42,13 @@ def configure_log(location=None, configuration=None):
 
 
 def gzip_file(file_in):
+    """
+    Compresses a file using gzip and returns the path of the compressed file.
+
+    :param file_in: The path of the file to be compressed.
+    :return: The path of the compressed file.
+    :raises Exception: If the file to be compressed is not found.
+    """
     file_out = os.path.abspath(f'{file_in}.gz')
     try:
         with open(file_in, 'rb') as f_in:

@@ -45,7 +45,7 @@ def assembly_pipeline(input_file, output_dir, isolate='phage',
         raise ValueError("Isolate must be: 'phage', 'bacterial', 'fungal' or 'unknown'")
 
     # Log
-    logger.info(f"Target coverage set to {target}")
+    logger.info(f"Target bases set to {target}")
 
     # Create output location
     extensions = ['.bam', '.fastq', '.fastq.gz']
