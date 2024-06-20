@@ -165,7 +165,9 @@ def assembly_pipeline(input_file, output_dir, isolate='phage',
 
     # CheckV
     if os.getenv('CHECKVDB'):
-        logger.info(f"Checkv database detected, running analysis: {os.getenv('CHECKVDB')}")
+        logger.info(f"CHECKVDB variable detected, running analysis: {os.getenv('CHECKVDB')}")
+        if not os.path.isdir(os.getenv('CHECKVDB')):
+            logger.error(f"CheckV database variable does not exist: {os.getenv('CHECKVDB')}")
         try:
             outdir = os.path.join(out, 'CheckV')
             checkv(contigs, outdir)
@@ -183,12 +185,24 @@ def assembly_pipeline(input_file, output_dir, isolate='phage',
 
 def batch_assembly_pipeline(input_dir, output_dir, isolate=None,
                             logger=None, logfile_location=None, logfile_configuration=None):
+    # Batch pipeline
+    input_dir = os.path.expanduser(input_dir)
+    output_dir = os.path.expanduser(output_dir)
+
     # Setting logger if None has been passed
     if logger is None:
+        if logfile_location is None:
+            logfile_location = output_dir
         logger = configure_log(
             location=logfile_location,
             configuration=logfile_configuration
         )
+
+    # Setting in/out to log
+    logger.info(f"input_dir: {input_dir}")
+    logger.info(f"output_dir: {output_dir}")
+    os.makedirs(output_dir, exist_ok=True)
+    count = 0
 
     # Check inputs
     if not os.path.isdir(input_dir):
@@ -198,8 +212,6 @@ def batch_assembly_pipeline(input_dir, output_dir, isolate=None,
     else:
         e = f'Batch assembly pipeline:'
         logger.info(e)
-        logger.info(f"input_dir: {input_dir}")
-        logger.info(f"output_dir: {output_dir}")
 
     # Phage default isolate
     if isolate is None:
@@ -208,11 +220,7 @@ def batch_assembly_pipeline(input_dir, output_dir, isolate=None,
     else:
         logger.info(f'Isolate type set to: {isolate}')
 
-    # Batch pipeline
-    input_dir = os.path.expanduser(input_dir)
-    output_dir = os.path.expanduser(output_dir)
-    os.makedirs(output_dir, exist_ok=True)
-    count = 0
+    # Processing
     for file in os.listdir(input_dir):
         count = count+1
         logger.info(f"Running input file #{count}")
