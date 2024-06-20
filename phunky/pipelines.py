@@ -170,11 +170,12 @@ def assembly_pipeline(input_file, output_dir, isolate='phage',
         logger.info(f"CHECKVDB variable detected, running analysis: {os.getenv('CHECKVDB')}")
         if not os.path.isdir(os.getenv('CHECKVDB')):
             logger.error(f"CheckV database variable does not exist: {os.getenv('CHECKVDB')}")
-        try:
-            outdir = os.path.join(out, 'CheckV')
-            checkv(contigs, outdir)
-        except Exception as e:
-            logger.warning(e)
+        else:
+            try:
+                outdir = os.path.join(out, 'CheckV')
+                checkv(contigs, outdir)
+            except Exception as e:
+                logger.warning(e)
     else:
         logger.info(f"No Checkv database detected, skipping...")
 
