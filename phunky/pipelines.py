@@ -33,6 +33,7 @@ def assembly_pipeline(input_file, output_dir, isolate='phage',
     try:
         logger.info(f'Beginning assembly pipeline: {os.path.basename(input_file)}')
     except Exception as e:
+        logger.error(e)
         raise Exception(f"Logging error: {e}")
 
     # Check if isolate value is allowed
