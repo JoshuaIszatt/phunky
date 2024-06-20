@@ -10,6 +10,7 @@ from .functions import (
     checkv,
     read_mapping,
     extract_contig_header,
+    extract_contig,
     generate_coverage_graph
 )
 
@@ -41,8 +42,10 @@ def assembly_pipeline(input_file, output_dir, isolate='phage',
         target = 5000000000  # Approx 100 X coverage for a 50mb genome
     elif isolate == 'unknown':
         target = 10000000000
+    elif isinstance(isolate, (int, float)):
+        target = int(isolate)
     else:
-        raise ValueError("Isolate must be: 'phage', 'bacterial', 'fungal' or 'unknown'")
+        raise ValueError("Isolate can be: 'phage', 'bacterial', 'fungal', 'unknown', or a numeric value")
 
     # Log
     logger.info(f"Target bases set to {target}")
@@ -150,15 +153,30 @@ def assembly_pipeline(input_file, output_dir, isolate='phage',
         basecov=basecov,
         output_directory=out)
 
+    # Extracting contig
+    name = f"{name}_{seq_len}bp"
+    file = os.path.join(out, name)
+    extract_contig(
+        contigs_fasta=contigs,
+        header=header,
+        output_file=file,
+        rename=name
+    )
+
     # CheckV
     if os.getenv('CHECKVDB'):
         logger.info(f"Checkv database detected, running analysis: {os.getenv('CHECKVDB')}")
-        outdir = os.path.join(out, 'CheckV')
-        checkv(contigs, outdir)
+        try:
+            outdir = os.path.join(out, 'CheckV')
+            checkv(contigs, outdir)
+        except Exception as e:
+            logger.warning(e)
+    else:
+        logger.info(f"No Checkv database detected, skipping...")
 
     # Finish pipeline
+    logger.info(f"Putative genome: {name}")
     logger.info(f"Pipeline complete:")
-    logger.info(f"Putative genome: {header}, Length: {seq_len}bp")
 
 # _____________________________________________________BATCHES
 

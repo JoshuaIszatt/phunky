@@ -194,6 +194,21 @@ def read_mapping(contigs_fasta, reads, output_directory, ram_mb=20000, mapped_sa
         raise Exception(f"Read mapping failed {e}")
 
 
+def extract_contig(contigs_fasta, header, output_file, rename=None):
+    with open(contigs_fasta, 'r') as handle:
+        entries = SeqIO.parse(handle, 'fasta')
+        with open(output_file, 'w') as textfile:
+            for entry in entries:
+                if header in entry.id:
+                    if rename:
+                        entry.id = rename
+                    try:
+                        SeqIO.write(entry, textfile, 'fasta')
+                        break
+                    except Exception as e:
+                        raise Exception(f"Could not extract {output_file}: {e}")
+
+
 def extract_contig_header(fasta_file):
     """
     This function takes a path to a multi-FASTA file and returns
