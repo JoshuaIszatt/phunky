@@ -22,6 +22,8 @@ def assembly_pipeline(input_file, output_dir, isolate='phage',
                       logger=None, logfile_location=None, logfile_configuration=None):
     # Setting logger if None has been passed
     if logger is None:
+        if logfile_location is None:
+            logfile_location = output_dir
         logger = configure_log(
             location=logfile_location,
             configuration=logfile_configuration

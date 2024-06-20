@@ -228,23 +228,6 @@ def extract_contig_header(fasta_file):
 
 
 def generate_coverage_graph(header, basecov, output_directory):
-    """
-    Generate a coverage graph for a specific header.
-
-    :param header: The header to search for in the coverage file.
-    :param basecov: The path to the coverage file.
-    :param output_directory: The directory where the generated graph will be saved.
-    :return: None
-
-    This finds the mean coverage value from the data.
-    The filtered data is plotted as a line graph, with position on the x-axis and coverage on the y-axis.
-    The graph is saved as a PNG file in the specified output directory.
-
-    Example usage:
-    ```
-    generate_coverage_graph("header1", "/path/to/basecov.tsv", "/path/to/output_directory")
-    ```
-    """
     headers = ["ID", "Pos", "Coverage"]
     df = pd.read_csv(basecov, sep='\t', comment='#', names=headers)
     coverage = df[df['ID'].str.contains(header)]
