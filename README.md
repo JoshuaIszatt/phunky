@@ -71,8 +71,5 @@ phunky.batch_phage_assembly_pipeline('reads_directory/', 'output_directory/')
 
 
 ## General todo
-* Specify input as demux processed bam files or fastq extracted from bam
 * Create conda distribution
-* Add logging function
 * Add hash key function
-* Add multiprocessing
