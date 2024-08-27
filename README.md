@@ -59,7 +59,7 @@ phunky.batch_assembly_pipeline('reads_directory/', 'output_directory/')
 ## Citation:
 There is a CITATION file in this repository (.CFF), however Phanta may also be cited like so:
 ```
-Iszatt JJ. PHUNKY long read assembly pipeline. Published online June 2024. Version <VERSION>. Accessed <ACCESS DATE>. https://github.com/JoshuaIszatt/phunky```
+Iszatt JJ. PHUNKY long read assembly pipeline. Published online June 2024. Version <VERSION>. Accessed <ACCESS DATE>. https://github.com/JoshuaIszatt/phunky
 ```
 
 ## Dependencies:
