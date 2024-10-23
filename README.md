@@ -1,4 +1,6 @@
 # Phunky
+[![DOI](https://zenodo.org/badge/805134858.svg)](https://doi.org/10.5281/zenodo.13981019)
+
 Long read assembly for phages:
 ![Phage pipeline](pipeline.png)
 **Figure 1:** Rough phage assembly pipeline, dotted line indicates where processing begins.
@@ -59,7 +61,7 @@ phunky.batch_assembly_pipeline('reads_directory/', 'output_directory/')
 ## Citation:
 There is a CITATION file in this repository (.CFF), however Phanta may also be cited like so:
 ```
-Iszatt JJ. PHUNKY long read assembly pipeline. Published online June 2024. Version <VERSION>. Accessed <ACCESS DATE>. https://github.com/JoshuaIszatt/phunky
+Iszatt, Joshua James. (2024). PHUNKY long read assembly pipeline (Version v0.3) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.13981020
 ```
 
 ## Dependencies:
