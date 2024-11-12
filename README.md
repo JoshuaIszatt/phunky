@@ -59,7 +59,7 @@ phunky.batch_assembly_pipeline('reads_directory/', 'output_directory/')
 ```
 
 ## Citation:
-There is a CITATION file in this repository (.CFF), however Phanta may also be cited like so:
+There is a CITATION file in this repository (.CFF), however Phunky may also be cited like so:
 ```
 Iszatt, Joshua James. (2024). PHUNKY long read assembly pipeline (Version v0.3) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.13981020
 ```
