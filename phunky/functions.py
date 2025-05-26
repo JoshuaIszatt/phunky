@@ -42,12 +42,11 @@ def configure_log(location=None, configuration=None):
 
 
 def gzip_file(file_in):
-    """
-    Compresses a file using gzip and returns the path of the compressed file.
+    """Compresses a file using gzip and returns the path of the compressed file.
 
-    :param file_in: The path of the file to be compressed.
-    :return: The path of the compressed file.
-    :raises Exception: If the file to be compressed is not found.
+    :param file_in: The path to the file to be compressed.
+    :return: The path to the compressed file.
+    :raises Exception: Raises if the file to be compressed is not found.
     """
     file_out = os.path.abspath(f'{file_in}.gz')
     try:
@@ -61,6 +60,14 @@ def gzip_file(file_in):
 
 
 def convert_bam_to_fastq(bam_file, output_file):
+    """Converts a BAM file into a FASTQ file using reformat.sh.
+
+    :param bam_file: The path to the BAM file to be converted.
+    :type bam_file: str
+    :param output_file: The path to the output FASTQ file.
+    :type output_file: str
+    :raises Exception: Raises if the conversion from BAM to FASTQ process fails.
+    """
     command = [
         'reformat.sh',
         f'in={bam_file}',
@@ -73,6 +80,14 @@ def convert_bam_to_fastq(bam_file, output_file):
 
 
 def porechop_abi(input_fq, output_fq):
+    """Trims adaptors from the FASTQ file and saves trimmed reads.
+
+    :param input_fq: The path to the FASTQ reads file to be trimmed.
+    :type input_fq: str
+    :param output_fq: The path to the output FASTQ reads file. 
+    :type output_fq: str
+    :raises Exception: Raises if the adaptor trimming process fails.
+    """
     command = [
         'porechop_abi',
         '-abi',
@@ -87,6 +102,22 @@ def porechop_abi(input_fq, output_fq):
 
 def filtlong(reads_fastq_gz, output_fq, minlen=1000,
              target_bases=20000000, keep_percent=90):
+    """Filters a FASTQ using Filtlong based on a minimum length, percentage and target bases and outputs filtered FASTQ.
+
+    Parameters can be set using JSON config file, otherwise default parameters are used.
+
+    :param reads_fastq_gz: The path to the FASTQ reads (.gz) file to be filtered.
+    :type reads_fastq_gz: str
+    :param output_fq: The path to the filtered FASTQ reads (.gz) file.
+    :type output_fq: str
+    :param minlen: Minimum read length, defaults to 1000.
+    :type minlen: int, optional
+    :param target_bases: Approximate total number of bases to retain, defaults to 20000000.
+    :type target_bases: int, optional
+    :param keep_percent: Percent of highest quality reads to retain, defaults to 90.
+    :type keep_percent: int, optional
+    :raises Exception: Raises if the Filtlong process fails.
+    """
     command = [
         'filtlong', reads_fastq_gz,
         '--min_length', str(minlen),
@@ -105,6 +136,18 @@ def filtlong(reads_fastq_gz, output_fq, minlen=1000,
 
 
 def nanoplot(reads_fastq_gz, output_directory, barcode=None):
+    """Generates read quality and length statistics using NanoPlot and returns the number of bases.
+
+    :param reads_fastq_gz: Path to the input FASTQ (.gz) file.
+    :type reads_fastq_gz: str
+    :param output_directory: Directory where NanoPlot output files will be saved.
+    :type output_directory: str
+    :param barcode: Optional barcode prefix for plot filenames, defaults to None.
+    :type barcode: str, optional
+    :raises Exception: Raises if NanoPlot failes to execute or output files cannot be read.
+    :return: Total number of bases reported in NanoStats.txt.
+    :rtype: int
+    """
     command = [
         'NanoPlot',
         '--fastq', reads_fastq_gz,
@@ -126,6 +169,20 @@ def nanoplot(reads_fastq_gz, output_directory, barcode=None):
 
 def flye_assembly(reads_fastq, output_directory, threads=8,
                   raise_on_fail=True):
+    """Runs Flye assembly on the FASTQ reads and returns the path to the assembled contigs.
+ 
+    :param reads_fastq: Path to the input FASTQ reads file.
+    :type reads_fastq: str
+    :param output_directory: Directory where Flye output files will be saved.
+    :type output_directory: str
+    :param threads: Number of CPU threads to be used for assembly, defaults to 8.
+    :type threads: int, optional
+    :param raise_on_fail: Whether to raise an execption if the assembler fails, defaults to True.
+    :type raise_on_fail: bool, optional
+    :raises Exception: Raises if Flye assembly fails and raise_on_fail is True.
+    :return: Path to the assembled contigs FASTA file.
+    :rtype: str
+    """
     command = [
         'flye',
         '--nano-hq', reads_fastq,
@@ -147,6 +204,14 @@ def flye_assembly(reads_fastq, output_directory, threads=8,
 
 
 def checkv(contigs, output_directory):
+    """Runs CheckV on assembled contigs and outputs the results to the output directory.
+
+    :param contigs: Path to the contigs FASTA file.
+    :type contigs: str
+    :param output_directory: Path to the output directory where CheckV results will be saved.
+    :type output_directory: str
+    :raises Exception: Raises if CheckV process fails.
+    """
     command = [
         "checkv", "end_to_end",
         f"{contigs}",
@@ -160,6 +225,22 @@ def checkv(contigs, output_directory):
 
 
 def read_mapping(contigs_fasta, reads, output_directory, ram_mb=20000, mapped_sam=False):
+    """Maps reads to contigs using BBMap and generates coverage statistics.
+
+    :param contigs_fasta: Path to the contigs FASTA file.
+    :type contigs_fasta: str
+    :param reads: Path to the FASTQ reads file to be mapped.
+    :type reads: str
+    :param output_directory: Path to the output directory where results will be saved.
+    :type output_directory: str
+    :param ram_mb: Amount of RAM to allocate for BBMap (mb), defaults to 20000.
+    :type ram_mb: int, optional
+    :param mapped_sam: Option to output mapped reads in SAM format, defaults to False.
+    :type mapped_sam: bool, optional
+    :raises Exception: Raises if the read mapping process fails.
+    :return: Paths to the base coverage, coverage statistics, scaffold statistics, and optionally the mapped SAM file.
+    :rtype: str, str, str, bool
+    """
     covstats = os.path.join(output_directory, "covstats.tsv")
     basecov = os.path.join(output_directory, "basecov.tsv")
     scafstats = os.path.join(output_directory, "scafstats.tsv")
@@ -195,6 +276,18 @@ def read_mapping(contigs_fasta, reads, output_directory, ram_mb=20000, mapped_sa
 
 
 def extract_contig(contigs_fasta, header, output_file, rename=None):
+    """Extracts a specific contig from a multi-FASTA file based on the header.
+
+    :param contigs_fasta: Path to the multi-FASTA file containing contigs.
+    :type contigs_fasta: str
+    :param header: Header (name) of the contig to be extracted.
+    :type header: str
+    :param output_file: Path to the output file where the extracted contig will be saved.
+    :type output_file: str
+    :param rename: Optional new name for the contig in the output file, defaults to None.
+    :type rename: str, optional
+    :raises Exception: Raises if the contig cannot be extracted or written to the output file.
+    """
     with open(contigs_fasta, 'r') as handle:
         entries = SeqIO.parse(handle, 'fasta')
         with open(output_file, 'w') as textfile:
@@ -210,12 +303,12 @@ def extract_contig(contigs_fasta, header, output_file, rename=None):
 
 
 def extract_contig_header(fasta_file):
-    """
-    This function takes a path to a multi-FASTA file and returns
-    the header (name) and size of the largest contig in the file.
+    """This function extracts the header (name) and size of the largest contig from the multi-FASTA file.
 
     :param fasta_file: Path to the multi-FASTA file.
+    :type fasta_file: str
     :return: A tuple with the header (name) and the size (length) of the largest contig.
+    :rtype: str
     """
     seq_id = None
     size = 0
@@ -228,6 +321,16 @@ def extract_contig_header(fasta_file):
 
 
 def generate_coverage_graph(header, basecov, output_directory):
+    """Generates a per-base coverage graph for a specific contig based on the base coverage file.
+
+
+    :param header: The header (name) of the contig for which the coverage graph is generated.
+    :type header: str
+    :param basecov: Path to the base coverage file (basecov.tsv).
+    :type basecov: str
+    :param output_directory: Directory where the coverage graph image will be saved.
+    :type output_directory: str
+    """
     headers = ["ID", "Pos", "Coverage"]
     df = pd.read_csv(basecov, sep='\t', comment='#', names=headers)
     coverage = df[df['ID'].str.contains(header)]
