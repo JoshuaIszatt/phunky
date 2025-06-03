@@ -13,7 +13,16 @@ import importlib.resources
 # _____________________________________________________BASE
 
 
-def configure_log(location=None, configuration=None):
+def configure_log(location: str = None, configuration: bool=None):
+    """Configures the log file configuration (location, settings etc)
+
+    Args:
+        location (str, optional): _description_. Defaults to None.
+        configuration (bool, optional): _description_. Defaults to None.
+
+    Returns:
+        _type_: _description_
+    """
     # Default logging settings if needed
     if configuration is None:
         configuration = importlib.resources.files("phunky") / "logging.json"
@@ -41,12 +50,16 @@ def configure_log(location=None, configuration=None):
 # _____________________________________________________BIO
 
 
-def gzip_file(file_in):
+def gzip_file(file_in: str):
     """
     Compresses a file using gzip and returns the path of the compressed file.
-
+    
     :param file_in: The path of the file to be compressed.
+    :type file_in: str
+    
     :return: The path of the compressed file.
+    :rtype: str
+    
     :raises Exception: If the file to be compressed is not found.
     """
     file_out = os.path.abspath(f'{file_in}.gz')
@@ -61,6 +74,15 @@ def gzip_file(file_in):
 
 
 def convert_bam_to_fastq(bam_file, output_file):
+    """_summary_
+
+    Args:
+        bam_file (_type_): _description_
+        output_file (_type_): _description_
+
+    Raises:
+        Exception: _description_
+    """
     command = [
         'reformat.sh',
         f'in={bam_file}',
@@ -73,6 +95,15 @@ def convert_bam_to_fastq(bam_file, output_file):
 
 
 def porechop_abi(input_fq, output_fq):
+    """_summary_
+
+    Args:
+        input_fq (_type_): _description_
+        output_fq (_type_): _description_
+
+    Raises:
+        Exception: _description_
+    """
     command = [
         'porechop_abi',
         '-abi',
@@ -85,8 +116,8 @@ def porechop_abi(input_fq, output_fq):
         raise Exception(f"porechop_abi failed: {e}")
 
 
-def filtlong(reads_fastq_gz, output_fq, minlen=1000,
-             target_bases=20000000, keep_percent=90):
+def filtlong(reads_fastq_gz: str, output_fq: str, minlen: int=1000,
+             target_bases: int=20000000, keep_percent: int=90):
     command = [
         'filtlong', reads_fastq_gz,
         '--min_length', str(minlen),
@@ -228,6 +259,14 @@ def extract_contig_header(fasta_file):
 
 
 def generate_coverage_graph(header, basecov, output_directory):
+    """_summary_
+
+
+    Args:
+        header (_type_): _description_
+        basecov (_type_): _description_
+        output_directory (_type_): _description_
+    """
     headers = ["ID", "Pos", "Coverage"]
     df = pd.read_csv(basecov, sep='\t', comment='#', names=headers)
     coverage = df[df['ID'].str.contains(header)]

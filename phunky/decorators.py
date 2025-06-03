@@ -42,3 +42,9 @@ def non_gmp_compliant(description=None):
             return func(*args, **kwargs)
         return wrapper
     return decorator
+
+
+from functions import gzip_file, convert_bam_to_fastq
+
+convert_bam_to_fastq()
+gzip_file()
